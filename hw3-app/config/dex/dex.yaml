@@ -1,14 +1,15 @@
 issuer: http://localhost:5556
-authorization_endpoint: http://dex:5556/auth
+authorization_endpoint: http://localhost:5556/auth
 token_endpoint: http://dex:5556/token
-jwks_uri": http://localhost:5556/keys
+jwks_uri: http://localhost:5556/keys
 userinfo_endpoint: http://localhost:5556/userinfo
 device_authorization_endpoint: http://localhost:5556/device/code
 
 # Storage configuration to use MongoDB
 storage:
   type: memory
-
+  config:
+    url: mongodb://localhost:27017/dex
 web:
   http: 0.0.0.0:5556
 

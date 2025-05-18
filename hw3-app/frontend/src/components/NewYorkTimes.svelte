@@ -23,6 +23,7 @@
     /* await the API Key and Articles */
     await fetchAPIKey();
     await fetchArticles();
+    await checkLoginStatus();
   });
 
   /* fetch function
@@ -41,21 +42,41 @@
   fetch the articles from The New York Time withe FILTER and API key
   */
   async function fetchArticles() {
-    const query = 'Davis OR Sacramento';
+    const query = "Davis OR Sacramento";
     try {
       const response = await fetch(
         `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${encodeURIComponent(query)}&api-key=${API_KEY}`
       );
 
-    // try {
-    //   const response = await fetch(
-    //     `https://api.nytimes.com/svc/search/v2/articlesearch.json?fq=${encodeURIComponent(FILTER)}&sort=newest&api-key=${API_KEY}`
-    //   );
       const data = await response.json();
       articles = data.response.docs;
     } catch (error) {
       console.error("Failed to fetch NYT articles:", error);
     }
+  }
+
+  let user: any = null;
+
+  async function checkLoginStatus() {
+    try {
+      const res = await fetch("/me"); // Flask route that returns session["user"]
+      if (res.ok) {
+        user = await res.json();
+      }
+    } catch (err) {
+      console.error("Could not check login session", err);
+    }
+  }
+
+  let showSidebar = false;
+  function toggleSidebar() {
+    showSidebar = !showSidebar;
+  }
+  function getGreeting(): string {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
   }
 </script>
 
@@ -73,11 +94,43 @@
         class="title-image"
       />
     </h1>
+    <div class="auth-button">
+      {#if user}
+        <button on:click={toggleSidebar}> Account </button>
+      {:else}
+        <button on:click={() => (window.location.href = "/login")}>
+          Login
+        </button>
+      {/if}
+    </div>
   </div>
 </header>
 
 <!-- The main from HW1 -->
 <main>
+  {#if showSidebar}
+    <div
+      class="sidebar-overlay"
+      role="button"
+      tabindex="0"
+      on:click={toggleSidebar}
+      on:keydown={(e) => e.key === "Enter" && toggleSidebar()}
+    />
+
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <button class="close-btn" on:click={toggleSidebar}>×</button>
+        <h2>{getGreeting()}, {user?.email || "User"}!</h2>
+        <button
+          class="logout-btn"
+          on:click={() => (window.location.href = "/logout")}
+        >
+          Logout
+        </button>
+      </div>
+    </aside>
+  {/if}
+
   <section class="grid-container">
     <!-- Show the first 6 article in the article array -->
     {#each articles.slice(0, 6) as article (article._id)}
