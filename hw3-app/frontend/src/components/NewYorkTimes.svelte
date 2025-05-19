@@ -133,14 +133,22 @@
 
     <aside class="sidebar">
       <div class="sidebar-content">
-        <button class="close-btn" on:click={toggleSidebar}>×</button>
-        <h2>{getGreeting()}, {user?.email || "User"}!</h2>
-        <button
-          class="logout-btn"
-          on:click={() => (window.location.href = "/logout")}
-        >
-          Logout
-        </button>
+        <div class="sidebar-header">
+          <strong> {user?.email || "User"} </strong>
+          <button class="close-btn" on:click={toggleSidebar}>×</button>
+        </div>
+
+        <div class="sidebar-HelloMassage">
+          <h2>{getGreeting()}!</h2>
+        </div>
+
+        <div class="sidebar-footer"> 
+          <button class="logout-btn" on:click={() => (window.location.href = "/logout")}>
+            Log out
+          </button>
+
+        </div>
+        
       </div>
     </aside>
   {/if}

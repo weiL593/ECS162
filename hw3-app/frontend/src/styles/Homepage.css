@@ -62,11 +62,37 @@
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
-.sidebar-content h2 {
-    margin-bottom: 0.5rem;
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sidebar-header strong {
+  text-align: left;
+  font-size: 1.2rem;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+ 
+}
+
+.sidebar-HelloMassage {
+    font-size: 1.2rem;
+    margin-top: 2rem;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-left: 1rem; 
+    padding-bottom: 3rem;
+
 }
 
 .close-btn {
@@ -77,17 +103,18 @@
     cursor: pointer;
 }
 
+
 .logout-btn {
-    position: absolute;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    padding: 0.5rem 1rem;
-    background-color: #d33;
-    color: white;
+    margin-left: 0.2rem;
+    font-size: 1rem;
+    background: none;
+    color: black;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    text-decoration: underline;
+    padding: 0; 
+    text-align: left;
 }
 
 .article-text {
