@@ -22,6 +22,7 @@
     formattedDate = today.toLocaleDateString("en-US", options);
 
     /* await the API Key and Articles */
+    /* await the commentNum and login status */
     await fetchAPIKey();
     await fetchArticles();
     await fetchCommentNum();
@@ -59,7 +60,7 @@
   }
 
   let user: any = null;
-
+  // check if a user session is active
   async function checkLoginStatus() {
     try {
       const res = await fetch("/me"); // Flask route that returns session["user"]
@@ -72,9 +73,11 @@
   }
 
   let showSidebar = false;
+  // toggle the account sidebar
   function toggleSidebar() {
     showSidebar = !showSidebar;
   }
+  // generate some Hello message
   function getGreeting(): string {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -85,11 +88,12 @@
   let selectedArticle: any = null;
   let showCommentSidebar = false;
 
+  // open the comment panel for a article
   function openCommentSidebar(article: any) {
     selectedArticle = article;
     showCommentSidebar = true;
   }
-
+  // close the comment sidebar
   function closeCommentSidebar() {
     showCommentSidebar = false;
   }
@@ -143,11 +147,11 @@
       class="sidebar-overlay"
       role="button"
       tabindex="0"
-      on:click={() => dispatch("close")}
+      on:click={toggleSidebar}
       on:keydown={(e) =>
-        (e.key === "Enter" || e.key === " ") && dispatch("close")}
+        (e.key === "Enter" || e.key === " ") && toggleSidebar()}
     ></div>
-
+     <!-- sidebar with user email, hello massage and logout -->
     <aside class="sidebar">
       <div class="sidebar-content">
         <div class="sidebar-header">
@@ -195,7 +199,7 @@
             >Origin Article</a
           >
         {/if}
-
+        <!-- comment button with count -->
         <button
           class="comment-button"
           on:click={() => openCommentSidebar(article)}
@@ -206,6 +210,7 @@
     {/each}
   </section>
 
+  <!-- comment sidebar only appears when one of this is selected -->
   {#if showCommentSidebar}
     <CommentSidebar
       articleId={selectedArticle._id}
