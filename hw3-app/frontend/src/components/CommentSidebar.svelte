@@ -13,12 +13,13 @@
   let newReply = "";
   let currentUser: any = null;
 
+  // fetch the comments for this article
   async function fetchComments() {
     const safeArticleId = encodeURIComponent(articleId);
     const res = await fetch(`/comments/${safeArticleId}`);
     comments = await res.json();
   }
-
+  // post a new comment
   async function postComment(parentId: string | null, text: string) {
     const safeArticleId = encodeURIComponent(articleId);
     await fetch(`/comments/${safeArticleId}`, {
@@ -31,7 +32,7 @@
     });
     await fetchComments();
   }
-
+  // fetch the logged-in user
   async function fetchUser() {
     const res = await fetch("/me");
     if (res.ok) currentUser = await res.json();
@@ -43,6 +44,7 @@
   });
 </script>
 
+<!-- semi-transparent account sidebar -->
 <div
   class="sidebar-overlay"
   role="button"
@@ -51,8 +53,9 @@
   on:keydown={(e) => (e.key === "Enter" || e.key === " ") && onClose()}
 ></div>
 
-
+<!-- the main section of comment sidebar -->
 <aside class="comment-sidebar">
+  <!-- the header of comment sidebar -->
   <div class="sidebar-header">
     <div class="article-title">
       <strong>{articleTitle}</strong>
@@ -60,8 +63,11 @@
     <button class="close-btn" on:click={onClose}>×</button>
   </div>
 
+    <!-- comments section -->
   <div class="comment-list">
     <h2>Comments {comments.length}</h2>
+    <!-- show each items in order -->
+    <!-- handle the reple and delect events -->
     {#each comments.filter((c) => !c.parent_id) as comment}
       <CommentThread
         {comment}
@@ -83,7 +89,7 @@
       />
     {/each}
   </div>
-
+<!-- write the comment -->
 <div class="comment-form">
   <textarea
     class="comment-textarea"
@@ -91,7 +97,7 @@
     placeholder="Write a comment..."
     rows="3"
   ></textarea>
-
+  <!-- create the cnacle and post buttons -->
   <div class="form-buttons">
     <button class="cancel-btn" on:click={() => (newComment = "")}>Cancel</button>
     <button
