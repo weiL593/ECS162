@@ -7,12 +7,33 @@
   export let newReply: string;
   export let onReply: (parentId: string, text: string) => void;
   export let setReplyTo: (id: string | null) => void;
+  export let currentUser: any;
+  export let onDelete: (id: string) => void;
 </script>
 
 <div class="comment-item">
-  <div class="comment-header">
-    <div class="avatar">
-      {comment.user_name?.[0]?.toUpperCase() || "U"}
+  <strong>{comment.user_name}</strong>
+  <p>{comment.comment}</p>
+  <small>{new Date(comment.timestamp).toLocaleString()}</small>
+
+  <button on:click={() => setReplyTo(comment._id)}>Reply</button>
+
+  {#if currentUser?.email === "moderator@hw3.com"}
+    <button class="delete-btn" on:click={() => onDelete(comment._id)}>
+      🗑 Delete
+    </button>
+  {/if}
+
+  {#if replyTo === comment._id}
+    <div class="reply-form">
+      <textarea bind:value={newReply} placeholder="Write a reply...">></textarea
+      >
+      <button
+        on:click={() => {
+          onReply(comment._id, newReply);
+          newReply = "";
+        }}>Post Reply</button
+      >
     </div>
     <div class="user-info">
       <strong class="username">{comment.user_name}</strong>
@@ -62,6 +83,8 @@
         {newReply}
         {onReply}
         {setReplyTo}
+        {currentUser}
+        {onDelete}
       />
     {/each}
   </div>

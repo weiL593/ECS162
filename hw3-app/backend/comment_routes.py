@@ -72,7 +72,7 @@ def update_comment(comment_id):
 
     result = comments_col.update_one(
         {"_id": ObjectId(comment_id), "user_email": user_email},
-        {"$set": {"comment": data["comment"], "timestamp": datetime.utcnow()}}
+        {"$set": {"comment": data["comment"], "timestamp": datetime.now(datetime.UTC)}}
     )
 
     if result.matched_count == 0:
@@ -83,14 +83,21 @@ def update_comment(comment_id):
 # DELETE a comment
 @comment_bp.route("/comments/<comment_id>", methods=["DELETE"])
 def delete_comment(comment_id):
-    user_email = get_logged_in_user()
+    user = get_logged_in_user()
 
-    result = comments_col.delete_one({
-        "_id": ObjectId(comment_id),
-        "user_email": user_email
-    })
+    if user["email"] != "moderator@hw3.com":
+        return jsonify({"error": "Unauthorized"}), 403
 
-    if result.deleted_count == 0:
-        return jsonify({"error": "Not found or not authorized"}), 404
+    # Delete the comment itself
+    result = comments_col.delete_one({"_id": ObjectId(comment_id)})
 
-    return jsonify({"message": "Comment deleted"})
+    # Recursively delete child comments
+    def delete_children(parent_id):
+        children = list(comments_col.find({"parent_id": parent_id}))
+        for child in children:
+            comments_col.delete_one({"_id": child["_id"]})
+            delete_children(str(child["_id"]))  # recurse
+
+    delete_children(comment_id)
+
+    return jsonify({"message": "Comment and replies deleted"}), 200

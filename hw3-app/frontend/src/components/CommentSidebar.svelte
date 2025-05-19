@@ -1,39 +1,47 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import "../styles/CommentSidebar.css";
-    import CommentThread from "./CommentThread.svelte";
-  
-    export let articleId: string;
-    export let articleTitle: string;
-    export let onClose: () => void;
-  
-    let comments: any[] = [];
-    let newComment = "";
-    let replyTo: string | null = null;
-    let newReply = "";
-  
-    async function fetchComments() {
-      const safeArticleId = encodeURIComponent(articleId);
-      const res = await fetch(`/comments/${safeArticleId}`);
-      comments = await res.json();
-    }
-  
-    async function postComment(parentId: string | null, text: string) {
-      const safeArticleId = encodeURIComponent(articleId);
-      await fetch(`/comments/${safeArticleId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          comment: text,
-          parent_id: parentId,
-        }),
-      });
-      fetchComments();
-    }
-  
-    onMount(fetchComments);
-  </script>
-  
+  import { onMount } from "svelte";
+  import "../styles/CommentSidebar.css";
+  import CommentThread from "./CommentThread.svelte";
+
+  export let articleId: string;
+  export let articleTitle: string;
+  export let onClose: () => void;
+
+  let comments: any[] = [];
+  let newComment = "";
+  let replyTo: string | null = null;
+  let newReply = "";
+  let currentUser: any = null;
+
+  async function fetchComments() {
+    const safeArticleId = encodeURIComponent(articleId);
+    const res = await fetch(`/comments/${safeArticleId}`);
+    comments = await res.json();
+  }
+
+  async function postComment(parentId: string | null, text: string) {
+    const safeArticleId = encodeURIComponent(articleId);
+    await fetch(`/comments/${safeArticleId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        comment: text,
+        parent_id: parentId,
+      }),
+    });
+    await fetchComments();
+  }
+
+  async function fetchUser() {
+    const res = await fetch("/me");
+    if (res.ok) currentUser = await res.json();
+  }
+
+  onMount(() => {
+    fetchUser();
+    fetchComments();
+  });
+</script>
 
 <div
   class="sidebar-overlay"
@@ -60,11 +68,16 @@
         {comments}
         {replyTo}
         {newReply}
+        {currentUser}
         onReply={async (parentId, text) => {
           if (!text.trim()) return;
           await postComment(parentId, text);
           newReply = "";
           replyTo = null;
+        }}
+        onDelete={async (id) => {
+          await fetch(`/comments/${id}`, { method: "DELETE" });
+          await fetchComments();
         }}
         setReplyTo={(id) => (replyTo = id)}
       />
@@ -85,6 +98,7 @@
       class="post-btn"
       disabled={!newComment.trim()}
       on:click={() => {
+        if (!newComment.trim()) return;
         postComment(null, newComment);
         newComment = "";
       }}
