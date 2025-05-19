@@ -83,7 +83,7 @@
   let selectedArticle: any = null;
   let showCommentSidebar = false;
 
-  function openCommentSidebar(article) {
+  function openCommentSidebar(article: any) {
     selectedArticle = article;
     showCommentSidebar = true;
   }
@@ -119,7 +119,6 @@
   </div>
 </header>
 
-<!-- The main from HW1 -->
 <main>
   {#if showSidebar}
     <div

@@ -1,11 +1,15 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
   import "../styles/CommentSidebar.css";
+  import CommentThread from "./CommentThread.svelte";
+
   export let articleId: string;
   export let articleTitle: string;
 
   let comments: any[] = [];
   let newComment = "";
+  let replyTo: string | null = null;
+  let newReply = "";
   const dispatch = createEventDispatcher();
 
   async function fetchComments() {
@@ -14,18 +18,16 @@
     comments = await res.json();
   }
 
-  async function postComment() {
-    if (!newComment.trim()) return;
-    //Sends a POST Requrest
+  async function postComment(parentId: string | null, text: string) {
     const safeArticleId = encodeURIComponent(articleId);
-
     await fetch(`/comments/${safeArticleId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ comment: newComment }),
+      body: JSON.stringify({
+        comment: text,
+        parent_id: parentId,
+      }),
     });
-    newComment = "";
-    //reloads comment
     fetchComments();
   }
 
@@ -46,20 +48,32 @@
     <p><em>{articleTitle}</em></p>
 
     <div class="comment-list">
-      {#each comments as comment}
-        <div class="comment-item">
-          <strong>{comment.user_name}</strong>
-          <p>{comment.comment}</p>
-          <small>{new Date(comment.timestamp).toLocaleString()}</small>
-        </div>
+      {#each comments.filter((c) => !c.parent_id) as comment}
+        <CommentThread
+          {comment}
+          {comments}
+          {replyTo}
+          {newReply}
+          onReply={async (parentId, text) => {
+            if (!text.trim()) return;
+            await postComment(parentId, text);
+            newReply = "";
+            replyTo = null;
+          }}
+          setReplyTo={(id) => (replyTo = id)}
+        />
       {/each}
     </div>
 
     <div class="comment-form">
       <textarea bind:value={newComment} placeholder="Write a comment..."
       ></textarea>
-
-      <button on:click={postComment}>Post</button>
+      <button
+        on:click={() => {
+          postComment(null, newComment);
+          newComment = "";
+        }}>Post</button
+      >
     </div>
   </div>
 </aside>
