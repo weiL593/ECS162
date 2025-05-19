@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, url_for, session, send_from_directory
+from flask import Flask, jsonify, redirect, session, send_from_directory
 from authlib.integrations.flask_client import OAuth
 from authlib.common.security import generate_token
 from dotenv import load_dotenv
@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from comment_routes import comment_bp
 import os
 
+#Load evn var based on FLASK_EVN
 load_dotenv(dotenv_path='../.env')
 
 env_mode = os.getenv("FLASK_ENV", "production")
@@ -22,10 +23,12 @@ template_path = os.getenv('TEMPLATE_PATH', '../frontend/dist')
 app = Flask(__name__, static_folder=static_path, template_folder=template_path)
 
 app.secret_key = os.urandom(24)
+#Comment routes
 app.register_blueprint(comment_bp)
 
 oauth = OAuth(app)
 
+#One time token for safety (Even those this project doesn't care)
 nonce = generate_token()
 
 oauth.register(
@@ -41,6 +44,8 @@ oauth.register(
     client_kwargs={'scope': 'openid email profile'}
 )
 
+#TBH the env var is little bti strange, string with space in it
+#Can also simply hard code the name here
 client = oauth.create_client(os.getenv('OIDC_CLIENT_NAME'))
 
 mongo_uri = os.getenv('MONGO_URI')
