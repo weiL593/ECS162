@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import "../styles/Homepage.css";
+  import CommentSidebar from "./CommentSidebar.svelte";
 
   let formattedDate = "";
   let articles: any[] = [];
@@ -78,6 +79,18 @@
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   }
+
+  let selectedArticle: any = null;
+  let showCommentSidebar = false;
+
+  function openCommentSidebar(article) {
+    selectedArticle = article;
+    showCommentSidebar = true;
+  }
+
+  function closeCommentSidebar() {
+    showCommentSidebar = false;
+  }
 </script>
 
 <!-- The header from HW1 -->
@@ -113,9 +126,10 @@
       class="sidebar-overlay"
       role="button"
       tabindex="0"
-      on:click={toggleSidebar}
-      on:keydown={(e) => e.key === "Enter" && toggleSidebar()}
-    />
+      on:click={() => dispatch("close")}
+      on:keydown={(e) =>
+        (e.key === "Enter" || e.key === " ") && dispatch("close")}
+    ></div>
 
     <aside class="sidebar">
       <div class="sidebar-content">
@@ -156,9 +170,24 @@
             >Origin Article</a
           >
         {/if}
+
+        <button
+          class="comment-button"
+          on:click={() => openCommentSidebar(article)}
+        >
+          💬
+        </button>
       </article>
     {/each}
   </section>
+
+  {#if showCommentSidebar}
+    <CommentSidebar
+      articleId={selectedArticle._id}
+      articleTitle={selectedArticle.headline.main}
+      on:close={closeCommentSidebar}
+    />
+  {/if}
 </main>
 
 <footer>

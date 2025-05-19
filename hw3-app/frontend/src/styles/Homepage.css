@@ -44,8 +44,10 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 998; /* behind sidebar */
-  }
+    z-index: 1000;
+    /* behind sidebar */
+}
+
 
 .sidebar {
     position: fixed;
@@ -56,7 +58,7 @@
     height: 100%;
     background-color: #f1f1f1;
     box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
-    z-index: 999;
+    z-index: 1001;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -73,7 +75,7 @@
     right: 1rem;
     font-weight: bold;
     cursor: pointer;
-  }
+}
 
 .logout-btn {
     position: absolute;
@@ -103,9 +105,21 @@
 }
 
 .article {
+    position: relative;
     border-right: 1px solid #d5d5d5;
     border-bottom: 1px solid #d5d5d5;
     padding: 20px;
+}
+
+.comment-button {
+    position: absolute;
+    bottom: 0.5em;
+    right: 0.5em;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .footer-container {

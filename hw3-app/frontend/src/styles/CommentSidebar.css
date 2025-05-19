@@ -1,0 +1,65 @@
+.comment-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100%;
+    background: #fff;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+  }
+  
+  .sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    overflow: hidden;
+  }
+  
+  .close-btn {
+    float: right;
+    font-size: 1.5em;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .comment-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1em;
+  }
+  
+  .comment-item {
+    margin-bottom: 1em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5em;
+  }
+  
+  .comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    border-top: 1px solid #ccc;
+    padding-top: 0.5em;
+  }
+  
+  .comment-form textarea {
+    width: 100%;
+    height: 60px;
+    resize: none;
+  }
+  

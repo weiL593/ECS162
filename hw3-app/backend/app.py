@@ -2,6 +2,8 @@ from flask import Flask, jsonify, redirect, url_for, session, send_from_director
 from authlib.integrations.flask_client import OAuth
 from authlib.common.security import generate_token
 from dotenv import load_dotenv
+from pymongo import MongoClient
+from comment_routes import comment_bp
 import os
 
 load_dotenv(dotenv_path='../.env')
@@ -20,7 +22,7 @@ template_path = os.getenv('TEMPLATE_PATH', '../frontend/dist')
 app = Flask(__name__, static_folder=static_path, template_folder=template_path)
 
 app.secret_key = os.urandom(24)
-
+app.register_blueprint(comment_bp)
 
 oauth = OAuth(app)
 
@@ -40,6 +42,11 @@ oauth.register(
 )
 
 client = oauth.create_client(os.getenv('OIDC_CLIENT_NAME'))
+
+mongo_uri = os.getenv('MONGO_URI')
+mongo_client = MongoClient(mongo_uri)
+db = mongo_client.get_database()
+users_collection = db.users
 
 @app.route('/api/key')
 def get_key():
@@ -65,6 +72,13 @@ def authorize():
 
     user_info = client.parse_id_token(token, nonce=nonce)  # or use .get('userinfo').json()
     session['user'] = user_info
+    # Store or update user in MongoDB
+    if user_info:
+        users_collection.update_one(
+            {"sub": user_info["sub"]},     
+            {"$set": user_info},           
+            upsert=True                    
+        )
     return redirect('/')
 
 # Get Userinfo
