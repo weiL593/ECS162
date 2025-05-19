@@ -1,6 +1,6 @@
 <script lang="ts">
   import CommentThread from "./CommentThread.svelte";
-
+  import "../styles/CommentItem.css";
   export let comment: any;
   export let comments: any[];
   export let replyTo: string | null;
@@ -10,25 +10,49 @@
 </script>
 
 <div class="comment-item">
-  <strong>{comment.user_name}</strong>
-  <p>{comment.comment}</p>
-  <small>{new Date(comment.timestamp).toLocaleString()}</small>
-
-  <button on:click={() => setReplyTo(comment._id)}>Reply</button>
-
-  {#if replyTo === comment._id}
-    <div class="reply-form">
-      <textarea bind:value={newReply} placeholder="Write a reply..."
-      >></textarea>
-      <button on:click={() => {
-        onReply(comment._id, newReply);
-        newReply = "";
-        }}>Post Reply</button
-      >
+  <div class="comment-header">
+    <div class="avatar">
+      {comment.user_name?.[0]?.toUpperCase() || "U"}
     </div>
-  {/if}
+    <div class="user-info">
+      <strong class="username">{comment.user_name}</strong>
+      <small class="timestamp">
+        {new Date(comment.timestamp).toLocaleString()}
+      </small>
+    </div>
+  </div>
 
-  <!-- Recursively render children -->
+  <div class="comment-body">
+    <p class="comment-text">{comment.comment}</p>
+
+    <button class="reply-link" on:click={() => setReplyTo(comment._id)}>
+      Reply
+    </button>
+
+    {#if replyTo === comment._id}
+      <div class="reply-form">
+        <textarea
+          bind:value={newReply}
+          placeholder="Write a reply..."
+          rows="2"
+        ></textarea>
+        <div class="form-buttons">
+          <button class="cancel-btn" on:click={() => setReplyTo(null)}>Cancel</button>
+          <button
+            class="post-btn"
+            on:click={() => {
+              onReply(comment._id, newReply);
+              newReply = "";
+            }}
+            disabled={!newReply.trim()}
+          >
+            Post
+          </button>
+        </div>
+      </div>
+    {/if}
+  </div>
+
   <div class="replies">
     {#each comments.filter((c) => c.parent_id === comment._id) as child}
       <CommentThread
@@ -42,11 +66,3 @@
     {/each}
   </div>
 </div>
-
-<style>
-  .replies {
-    margin-left: 1em;
-    border-left: 1px solid #ccc;
-    padding-left: 1em;
-  }
-</style>

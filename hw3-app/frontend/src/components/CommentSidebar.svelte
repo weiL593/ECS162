@@ -35,13 +35,14 @@
   </script>
   
 
-  <div
+<div
   class="sidebar-overlay"
   role="button"
   tabindex="0"
   on:click={onClose}
   on:keydown={(e) => (e.key === "Enter" || e.key === " ") && onClose()}
-/>
+></div>
+
 
 <aside class="comment-sidebar">
   <div class="sidebar-header">
@@ -52,6 +53,7 @@
   </div>
 
   <div class="comment-list">
+    <h2>Comments {comments.length}</h2>
     {#each comments.filter((c) => !c.parent_id) as comment}
       <CommentThread
         {comment}
@@ -69,18 +71,27 @@
     {/each}
   </div>
 
-  <div class="comment-form">
-    <textarea
-      bind:value={newComment}
-      placeholder="Write a comment..."
-      rows="2"
-    />
+<div class="comment-form">
+  <textarea
+    class="comment-textarea"
+    bind:value={newComment}
+    placeholder="Write a comment..."
+    rows="3"
+  ></textarea>
+
+  <div class="form-buttons">
+    <button class="cancel-btn" on:click={() => (newComment = "")}>Cancel</button>
     <button
       class="post-btn"
+      disabled={!newComment.trim()}
       on:click={() => {
         postComment(null, newComment);
         newComment = "";
       }}
-    >Post</button>
+    >
+      Post
+    </button>
   </div>
+</div>
+
 </aside>

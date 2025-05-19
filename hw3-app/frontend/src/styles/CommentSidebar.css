@@ -1,3 +1,4 @@
+/* Overlay behind the sidebar */
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -8,6 +9,7 @@
   z-index: 998;
 }
 
+/* Sidebar container */
 .comment-sidebar {
   position: fixed;
   top: 0;
@@ -21,6 +23,7 @@
   z-index: 999;
 }
 
+/* Header with title and close button */
 .sidebar-header {
   display: flex;
   justify-content: space-between;
@@ -47,6 +50,7 @@
   cursor: pointer;
 }
 
+/* Scrollable list of comments */
 .comment-list {
   flex: 1;
   overflow-y: auto;
@@ -57,9 +61,9 @@
   margin: 0;
   font-size: 1.25rem;
   text-align: left;
-  gap: 1rem; 
 }
 
+/* Individual comment container */
 .comment-item {
   background: #f5f5f5;
   padding: 1rem;
@@ -67,6 +71,7 @@
   margin-bottom: 1rem;
 }
 
+/* Comment header with avatar and user info */
 .comment-header {
   display: flex;
   align-items: center;
@@ -103,32 +108,88 @@
   color: #666;
 }
 
+/* Comment body text */
 .comment-text {
   font-size: 0.95rem;
   color: #333;
-  margin-left: 2.75rem; /* aligns under username */
+  margin-left: 2.75rem;
   line-height: 1.4;
 }
 
+/* Replies thread style */
+.replies {
+  margin-left: 1em;
+  border-left: 2px solid #ddd;
+  padding-left: 1em;
+  margin-top: 0.5em;
+}
+
+.reply-item {
+  margin-top: 0.5em;
+  background: #f9f9f9;
+  padding: 0.5em;
+  border-radius: 4px;
+}
+
+.reply-form textarea {
+  margin-top: 0.5em;
+  width: 100%;
+  height: 50px;
+}
+
+/* Comment input form at the bottom */
 .comment-form {
   border-top: 1px solid #ddd;
   padding: 1rem;
   background-color: #fafafa;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
-.comment-form textarea {
-  padding: 0.5rem;
+/* Improved textarea with vertical resize */
+.comment-textarea {
+  padding: 0.75rem;
+  font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  resize: vertical;
+  min-height: 60px;
+  max-height: 180px;
+  line-height: 1.5;
   font-family: inherit;
-  margin-bottom: 0.5rem;
-  resize: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: #888;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Button container: Post + Cancel */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.cancel-btn {
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.cancel-btn:hover {
+  background-color: #d5d5d5;
 }
 
 .post-btn {
-  align-self: flex-end;
   padding: 0.4rem 1rem;
   background-color: #222;
   color: white;
@@ -141,23 +202,7 @@
   background-color: #000;
 }
 
-.replies {
-    margin-left: 1em;
-    border-left: 2px solid #ddd;
-    padding-left: 1em;
-    margin-top: 0.5em;
-}
-
-.reply-form textarea {
-    margin-top: 0.5em;
-    width: 100%;
-    height: 50px;
-}
-
-.reply-item {
-    margin-top: 0.5em;
-    background: #f9f9f9;
-    padding: 0.5em;
-    border-radius: 4px;
->>>>>>> e4d56d6bcae52452db464db97c946497459b0b63
+.post-btn:disabled {
+  background-color: #999;
+  cursor: not-allowed;
 }
