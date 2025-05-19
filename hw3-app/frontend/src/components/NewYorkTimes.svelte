@@ -24,6 +24,7 @@
     /* await the API Key and Articles */
     await fetchAPIKey();
     await fetchArticles();
+    await fetchCommentNum();
     await checkLoginStatus();
   });
 
@@ -51,6 +52,7 @@
 
       const data = await response.json();
       articles = data.response.docs;
+      await fetchCommentNum();
     } catch (error) {
       console.error("Failed to fetch NYT articles:", error);
     }
@@ -83,7 +85,7 @@
   let selectedArticle: any = null;
   let showCommentSidebar = false;
 
-  function openCommentSidebar(article) {
+  function openCommentSidebar(article: any) {
     selectedArticle = article;
     showCommentSidebar = true;
   }
@@ -91,6 +93,22 @@
   function closeCommentSidebar() {
     showCommentSidebar = false;
   }
+
+  let commentNum: Record<string,number> = {};
+  // fetch the comment number for each articles
+  async function fetchCommentNum() {
+    for (const article of articles.slice(0,6)) {
+      try{
+        const res = await fetch(`/comments/${article._id}`);
+        const data = await res.json();
+        commentNum[article._id] = data.length; 
+      } catch (err) {
+        console.error(`Failed to fetch comments for ${article._id}`, err);
+        commentNum[article._id] = 0;
+      }
+    }
+  }
+
 </script>
 
 <!-- The header from HW1 -->
@@ -183,7 +201,7 @@
           class="comment-button"
           on:click={() => openCommentSidebar(article)}
         >
-          💬
+          💬 {commentNum[article._id] ?? 0}
         </button>
       </article>
     {/each}
@@ -193,9 +211,10 @@
     <CommentSidebar
       articleId={selectedArticle._id}
       articleTitle={selectedArticle.headline.main}
-      on:close={closeCommentSidebar}
+      onClose={closeCommentSidebar}
     />
   {/if}
+
 </main>
 
 <footer>
