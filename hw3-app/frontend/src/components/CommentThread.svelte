@@ -7,6 +7,8 @@
   export let newReply: string;
   export let onReply: (parentId: string, text: string) => void;
   export let setReplyTo: (id: string | null) => void;
+  export let currentUser: any;
+  export let onDelete: (id: string) => void;
 </script>
 
 <div class="comment-item">
@@ -16,13 +18,20 @@
 
   <button on:click={() => setReplyTo(comment._id)}>Reply</button>
 
+  {#if currentUser?.email === "moderator@hw3.com"}
+    <button class="delete-btn" on:click={() => onDelete(comment._id)}>
+      🗑 Delete
+    </button>
+  {/if}
+
   {#if replyTo === comment._id}
     <div class="reply-form">
-      <textarea bind:value={newReply} placeholder="Write a reply..."
-      >></textarea>
-      <button on:click={() => {
-        onReply(comment._id, newReply);
-        newReply = "";
+      <textarea bind:value={newReply} placeholder="Write a reply...">></textarea
+      >
+      <button
+        on:click={() => {
+          onReply(comment._id, newReply);
+          newReply = "";
         }}>Post Reply</button
       >
     </div>
@@ -38,6 +47,8 @@
         {newReply}
         {onReply}
         {setReplyTo}
+        {currentUser}
+        {onDelete}
       />
     {/each}
   </div>
