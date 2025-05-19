@@ -137,7 +137,6 @@
   </div>
 </header>
 
-<!-- The main from HW1 -->
 <main>
   {#if showSidebar}
     <div

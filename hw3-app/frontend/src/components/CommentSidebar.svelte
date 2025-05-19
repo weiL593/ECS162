@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import "../styles/CommentSidebar.css";
+  import CommentThread from "./CommentThread.svelte";
+
   export let articleId: string;
   export let articleTitle: string;
   export let onClose: () => void; 
@@ -14,18 +16,16 @@
     comments = await res.json();
   }
 
-  async function postComment() {
-    if (!newComment.trim()) return;
-    //Sends a POST Requrest
+  async function postComment(parentId: string | null, text: string) {
     const safeArticleId = encodeURIComponent(articleId);
-
     await fetch(`/comments/${safeArticleId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ comment: newComment }),
+      body: JSON.stringify({
+        comment: text,
+        parent_id: parentId,
+      }),
     });
-    newComment = "";
-    //reloads comment
     fetchComments();
   }
 
@@ -47,6 +47,34 @@
     </div>
     <div>
       <button class="close-btn" on:click={onClose}>×</button>
+</div>
+    <div class="comment-list">
+      {#each comments.filter((c) => !c.parent_id) as comment}
+        <CommentThread
+          {comment}
+          {comments}
+          {replyTo}
+          {newReply}
+          onReply={async (parentId, text) => {
+            if (!text.trim()) return;
+            await postComment(parentId, text);
+            newReply = "";
+            replyTo = null;
+          }}
+          setReplyTo={(id) => (replyTo = id)}
+        />
+      {/each}
+    </div>
+
+    <div class="comment-form">
+      <textarea bind:value={newComment} placeholder="Write a comment..."
+      ></textarea>
+      <button
+        on:click={() => {
+          postComment(null, newComment);
+          newComment = "";
+        }}>Post</button
+      >
     </div>
   </div>
 

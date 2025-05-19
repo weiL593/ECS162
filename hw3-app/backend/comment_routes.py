@@ -27,8 +27,6 @@ def get_logged_in_user():
 # GET all comments for an article
 @comment_bp.route("/comments/<path:article_id>", methods=["GET"])
 def get_comments(article_id):
-    print("🔍 GET comments for article_id:", article_id, flush=True)
-
     comment_list = list(comments_col.find({"article_id": article_id}))
     for comment in comment_list:
         comment["_id"] = str(comment["_id"])
@@ -45,19 +43,23 @@ def post_comment(article_id):
         if not data or "comment" not in data:
             return jsonify({"error": "Missing comment"}), 400
 
+        # Handle parent_id safely (could be None)
+        parent_id = data.get("parent_id")
+
         comment_doc = {
             "article_id": article_id,
             "user_email": user["email"],
             "user_name": user["name"],
             "comment": data["comment"],
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.utcnow(),
+            "parent_id": parent_id  # optional
         }
 
         comments_col.insert_one(comment_doc)
         return jsonify({"message": "Comment added"}), 201
 
     except Exception as e:
-        return jsonify({"error": "Internal server error"}), 500
+        return jsonify({"error": "Internal Server Error"}), 500
 
 # PUT (edit) a comment
 @comment_bp.route("/comments/<comment_id>", methods=["PUT"])
